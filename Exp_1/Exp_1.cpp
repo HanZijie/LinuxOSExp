@@ -41,7 +41,6 @@ void p2_exit(int sig_no){
 int main(int argc, char const *argv[])
 {
     pipe(pipefd);
-    std::cout << getpid();
     signal(SIGINT,sigHandle);
     p1 = fork();
     int *addr;
