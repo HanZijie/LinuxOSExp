@@ -34,43 +34,34 @@ void V(int semid,int index)
 }
 
 static int shMemoryId;
-typedef struct shareMemory{
-    int sum;
-}ShareMemory;
+char shareMemory[30];
 
 int main(int argc, char const *argv[])
 {
     sem_id = semget((key_t)1,2,0666 | IPC_CREAT);
-    shMemoryId = shmget((key_t)2,sizeof(ShareMemory),0666 | IPC_CREAT);
-    ShareMemory* m = (ShareMemory *)shmat(shMemoryId,NULL,0);
+    shMemoryId = shmget((key_t)2,sizeof(shareMemory),0666 | IPC_CREAT);
+    char* m = (char *)shmat(shMemoryId,NULL,0);
     semctl(sem_id,0,SETVAL,0);
-    semctl(sem_id,1,SETVAL,1);
+    semctl(sem_id,1,SETVAL,29);
+    FILE* fp = fopen("copy.txt","w");
+    fclose(fp);
 
     p1 = fork();
     if(p1 == 0){
-        int i = 1;
-        for(i = 1;i <= 100;i++){
-            P(sem_id,1);
-            printf("Process 1 is adding\n");
-            m->sum += i;
-            //V(sem_id,0);
-        }
+        printf("./get is created\n");
+        execv("./get",NULL);
         exit(0);
     }else{
         p2 = fork();
         if(p2 == 0){
-            int a = 1;
-            for (a = 0; a < 100;a++){
-                P(sem_id,0);
-                printf("Process 2 is printing:\n%d\n",m->sum);
-                V(sem_id,1);
-            }
+            execv("./put",NULL);
             exit(0);
         }else{
             int *addr;
             wait(addr);
             wait(addr);
             semctl(sem_id,1,IPC_RMID);
+            shmctl(shMemoryId,IPC_RMID,0);
             return 0;
         }
     }
