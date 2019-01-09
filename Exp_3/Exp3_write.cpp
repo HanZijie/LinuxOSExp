@@ -36,20 +36,20 @@ int main(int argc, char const *argv[])
     char* m = (char *)shmat(shMemoryId,NULL,0);
     int sem_id = semget((key_t)1,2,0666 | IPC_CREAT);
     int a = 0;
-    FILE* fp = fopen("copy.txt","w+");
+    FILE* fp = fopen("copy","w+");
     fclose(fp);
-    fp = fopen("copy.txt","ab");
+    fp = fopen("copy","ab");
     while (1){
         P(sem_id,0);
         a = a%30;
-        if(m[a] != NULL){
-            fwrite((m+a), sizeof(char) , 1,fp);
-        }else{
-            printf("copy is done\n");
+        if(m[30] == a){
+            printf("copy is done %x n %x\n",m[30],a);
             fclose(fp);
             V(sem_id,1);
             break;
         }
+        //printf("write: %x and %d\n",m[a],m[30]);
+        fwrite((m+a), sizeof(char) , 1,fp);
         a++;
         V(sem_id,1);
     }

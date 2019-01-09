@@ -34,7 +34,7 @@ void V(int semid,int index)
 }
 
 static int shMemoryId;
-char shareMemory[30];
+char shareMemory[31];
 
 int main(int argc, char const *argv[])
 {
@@ -43,8 +43,6 @@ int main(int argc, char const *argv[])
     char* m = (char *)shmat(shMemoryId,NULL,0);
     semctl(sem_id,0,SETVAL,0);
     semctl(sem_id,1,SETVAL,29);
-    FILE* fp = fopen("copy.txt","w");
-    fclose(fp);
 
     p1 = fork();
     if(p1 == 0){

@@ -15,8 +15,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-using std::string;
-
 pid_t p1;
 pid_t p2;
 int pipefd[2];

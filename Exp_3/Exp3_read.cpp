@@ -36,19 +36,20 @@ int main(int argc, char const *argv[])
     char* m = (char *)shmat(shMemoryId,NULL,0);
     int sem_id = semget((key_t)1,2,0666 | IPC_CREAT);
     int i = 0;
-    FILE* fp = fopen("source.txt","rb");
+    FILE* fp = fopen("source","rb");
+    m[30] = 31;
     while(1){
         P(sem_id,1);
         i = i%30;
         m[i] = (char)fgetc(fp);
         if(feof(fp)){
             printf("read is done\n");
-            m[i] = NULL;
+            m[30] = i;
             fclose(fp);
             V(sem_id,0);
             break;
         }
-        printf("%c",m[i]);
+        //printf("%c",m[i]);
         i++;
         V(sem_id,0);
     }
